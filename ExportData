@@ -1,0 +1,298 @@
+import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFCellStyle;
+import org.apache.poi.hssf.usermodel.HSSFPrintSetup;
+import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.PrintSetup;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
+
+import com.fr.third.com.lowagie.text.Document;
+import com.fr.third.com.lowagie.text.Font;
+import com.fr.third.com.lowagie.text.Paragraph;
+import com.fr.third.com.lowagie.text.pdf.BaseFont;
+import com.fr.third.com.lowagie.text.pdf.PdfPCell;
+import com.fr.third.com.lowagie.text.pdf.PdfPRow;
+import com.fr.third.com.lowagie.text.pdf.PdfPTable;
+import com.fr.third.com.lowagie.text.pdf.PdfWriter;
+	
+	if ("excel2003".equals(filetype)) {
+		exportExcel2003(list, headers, sheetName, response);
+	} else if ("excel2007".equals(filetype)) {
+		exportExcel2007(list, headers, sheetName, response);
+	} else if ("csv".equals(filetype)) {
+		exportCSV(list, headers, sheetName, response);
+	} else if ("pdf".equals(filetype)) {
+		exportPDF(list, headers, sheetName, response);
+	}
+	
+	public static void exportExcel2003(List list, List header, String sheetName, HttpServletResponse response) {
+		// 创建工作簿
+		HSSFWorkbook wb = new HSSFWorkbook();
+		// 创建工作表
+		HSSFSheet sheet = wb.createSheet(sheetName);
+		// fit sheet to one page
+		HSSFPrintSetup ps = sheet.getPrintSetup();
+		sheet.setAutobreaks(true);
+		sheet.setDefaultColumnWidth(20);  
+		ps.setFitHeight((short) 1);
+		ps.setFitWidth((short) 1);
+
+		HSSFCellStyle dataCellStyle = wb.createCellStyle();
+		dataCellStyle.setBorderBottom(HSSFCellStyle.BORDER_THIN);
+		dataCellStyle.setBorderLeft(HSSFCellStyle.BORDER_THIN);
+		dataCellStyle.setBorderRight(HSSFCellStyle.BORDER_THIN);
+		dataCellStyle.setBorderTop(HSSFCellStyle.BORDER_THIN);
+		int dataLineStartRowIndex = 0;
+
+		dataCellStyle.setWrapText(true);
+		// 设置表头
+		int count = 0;
+		ExportExcelUtil2003.setRow(sheet, header, dataLineStartRowIndex++, dataCellStyle);
+		count++;
+		if(list != null){
+			for (int i = 0; i < list.size(); i++) {
+				List row = (List) list.get(i);
+				// Object obj =list.get(i);
+				// 填充row 数据
+				ExportExcelUtil2003.setRow(sheet, row, dataLineStartRowIndex++, dataCellStyle);
+				count++;
+			}
+		}
+		for (int i = 0; i < count; i++) {
+			sheet.autoSizeColumn(i);
+		}
+		//设置列宽的最大值和最小值，避免太窄或者太宽
+		for(int j = 0;j < count;j++){
+			int columnWidth = sheet.getColumnWidth(j);
+			int realWidth = (int) Math.ceil(columnWidth/256);
+			if(realWidth < 10){
+				sheet.setColumnWidth(j, 256*12);
+			}
+			if(realWidth > 35){
+				sheet.setColumnWidth(j, 256*35);
+			}
+		}
+		
+		try {
+			OutputStream output = response.getOutputStream();
+			response.reset();
+			response.setContentType("application/vnd.ms-excel; charset=\"utf-8\"");
+			response.setHeader("Content-disposition", "attachment; filename=" + transferFilename(sheetName) + ".xls");
+			ExportExcelUtil2003.exportWorkBook2Response(wb, response);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	public static void exportExcel2007(List list, List header, String sheetName, HttpServletResponse response) {
+		// 创建工作簿
+		Workbook wb = new SXSSFWorkbook();
+		// 创建工作表
+		Sheet sheet = wb.createSheet(sheetName);
+		// fit sheet to one page
+		PrintSetup ps = sheet.getPrintSetup();
+		sheet.setAutobreaks(true);
+		sheet.setDefaultColumnWidth(20);
+		ps.setFitHeight((short) 1);
+		ps.setFitWidth((short) 1);
+
+		CellStyle dataCellStyle = wb.createCellStyle();
+		dataCellStyle.setBorderBottom(CellStyle.BORDER_THIN);
+		dataCellStyle.setBorderLeft(CellStyle.BORDER_THIN);
+		dataCellStyle.setBorderRight(CellStyle.BORDER_THIN);
+		dataCellStyle.setBorderTop(CellStyle.BORDER_THIN);
+		int dataLineStartRowIndex = 0;
+
+		dataCellStyle.setWrapText(true);
+		// 设置表头
+		int count = 0;
+		ExportExcelUtil.setRow(sheet, header, dataLineStartRowIndex++, dataCellStyle);
+		count++;
+		for (int i = 0; i < list.size(); i++) {
+			List row = (List) list.get(i);
+			// Object obj =list.get(i);
+			// 填充row 数据
+			ExportExcelUtil.setRow(sheet, row, dataLineStartRowIndex++, dataCellStyle);
+			count++;
+		}
+		for (int i = 0; i < count; i++) {
+			sheet.autoSizeColumn(i);
+		}
+		//设置列宽的最大值和最小值，避免太窄或者太宽
+		for(int j = 0;j < count;j++){
+			int columnWidth = sheet.getColumnWidth(j);
+			int realWidth = (int) Math.ceil(columnWidth/256);
+			if(realWidth < 10){
+				sheet.setColumnWidth(j, 256*12);
+			}
+			if(realWidth > 35){
+				sheet.setColumnWidth(j, 256*35);
+			}
+		}
+		
+		try {
+			OutputStream output = response.getOutputStream();
+			response.reset();
+			response.setContentType(
+					"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet; charset=\"utf-8\"");
+			response.setHeader("Content-disposition", "attachment; filename=" + transferFilename(sheetName) + ".xlsx");
+			ExportExcelUtil.exportWorkBook2Response(wb, response);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	public static void exportCSV(List list, List header, String sheetName, HttpServletResponse response) throws Exception {
+		File file = File.createTempFile("export", ".csv");
+
+		StringBuffer sb = new StringBuffer("");
+		for (String h : header) {
+			sb.append(transfer(h)).append(",");
+		}
+		sb.append("\r\n");
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		for (Object obj : list) {
+			for (Object obj2 : (List) obj) {
+				if (obj2 instanceof Date) {
+					sb.append(sdf.format((Date) obj2)).append(",");
+				} else {
+					sb.append(transfer(obj2.toString())).append(",");
+				}
+			}
+			sb.append("\r\n");
+		}
+		OutputStream out = null;
+		OutputStreamWriter writer = null;
+		try {
+			out = new FileOutputStream(file);
+			writer = new OutputStreamWriter(out, "UTF-8");
+			writer.append(sb.toString());
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			if(writer != null){
+				writer.close();
+			}
+			if(out != null){
+				out.close();
+			}
+		}
+
+		response.setContentType("text/csv; charset=\"utf-8\"");
+		response.setHeader("Content-disposition", "attachment; filename="+transferFilename(sheetName)+".csv");
+		byte[] buffer = new byte[1024];
+		FileInputStream fis = null;
+		BufferedInputStream bis = null;
+		try {
+			fis = new FileInputStream(file);
+			bis = new BufferedInputStream(fis);
+			OutputStream os = response.getOutputStream();
+			os.write(new byte[]{(byte)0xef,(byte)0xbb,(byte)0xbf});
+			int i = bis.read(buffer);
+			while (i != -1) {
+				os.write(buffer, 0, i);
+				i = bis.read(buffer);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			if (bis != null)
+				bis.close();
+			if (fis != null)
+				fis.close();
+			file.delete();
+		}
+	}
+	/** 处理双引号和逗号的特殊转译 */
+	public static String transfer(String str) {
+		String tempDescription = str;
+		// 如果有逗号
+		if (str.contains(",")) {
+			// 如果还有双引号，先将双引号转义，避免两边加了双引号后转义错误
+			if (str.contains("\"")) {
+				tempDescription = str.replace("\"", "\"\"");
+			}
+			// 在将逗号转义
+			tempDescription = "\"" + tempDescription + "\"";
+		}
+		return tempDescription;
+	}
+	
+	public static void exportPDF(List list, List header, String sheetName, HttpServletResponse response) throws Exception {
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		response.setContentType("application/pdf; charset=\"utf-8\"");
+		response.setHeader("Content-disposition", "attachment; filename=" + transferFilename(sheetName) + ".pdf");
+		int cellNum = header.size();
+		File file = File.createTempFile("export", ".pdf");
+		Document document = new Document();
+		PdfWriter pdfWriter = null;
+		try {
+			pdfWriter = PdfWriter.getInstance(document, new FileOutputStream(file));
+			document.open();
+			
+			BaseFont bfChinese = BaseFont.createFont("STSong-Light","UniGB-UCS2-H",BaseFont.NOT_EMBEDDED);
+			Font font = new Font(bfChinese);
+
+			PdfPTable table = new PdfPTable(cellNum);
+			table.setWidthPercentage(100); // 宽度100%填充
+			table.setSpacingBefore(10f); // 前间距
+			table.setSpacingAfter(10f);
+			List<PdfPRow> listRow = table.getRows();
+
+			PdfPCell[] cells = new PdfPCell[cellNum];
+			int i = 0;
+			for(String h : header){
+				cells[i++] = new PdfPCell(new Paragraph(h,font));
+			}
+			listRow.add(new PdfPRow(cells));
+			
+			for (Object obj : list) {
+				cells = new PdfPCell[cellNum];
+				i = 0;
+				for (Object obj2 : (List) obj) {
+					if (obj2 instanceof Date) {
+						cells[i++] = new PdfPCell(new Paragraph(sdf.format((Date) obj2)));
+					} else {
+						cells[i++] = new PdfPCell(new Paragraph(obj2.toString(),font));
+					}
+				}
+				listRow.add(new PdfPRow(cells));
+			}
+			document.add(table);
+			document.close();
+			pdfWriter.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		byte[] buffer = new byte[1024];
+		FileInputStream fis = null;
+		BufferedInputStream bis = null;
+		try {
+			fis = new FileInputStream(file);
+			bis = new BufferedInputStream(fis);
+			OutputStream os = response.getOutputStream();
+			int i = bis.read(buffer);
+			while (i != -1) {
+				os.write(buffer, 0, i);
+				i = bis.read(buffer);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			if (bis != null)
+				bis.close();
+			if (fis != null)
+				fis.close();
+			file.delete();
+		}
+		
+	}
