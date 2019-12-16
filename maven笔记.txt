@@ -1,0 +1,15 @@
+maven项目生命周期阶段：
+validate
+compile
+test
+package
+integration-test
+verify
+install
+deploy
+
+clean 清除之前的build创建的工作
+
+--------------------------------------------------
+mvn dependency:sources 下载依赖源码
+mvn dependency:resolve -Dclassifier=javadoc 下载依赖API文档

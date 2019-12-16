@@ -1,0 +1,60 @@
+模式————逻辑对象，管理数据库表；用户————访问、操作数据库；用户与模式一一对应，默认他们同名。
+数据库——表空间——表
+数据库实例——模式schema——对象object(表、视图)
+创建用户时，默认模式与用户名同名，只有当用户下创建了对象时才会创建模式。
+对象在数据库实例中完整的名称是schema.object，未指定模式时就使用默认模式。
+
+===================================================================================================
+查询字符编码 https://www.cnblogs.com/kerrycode/p/3749085.html
+select * from v$nls_parameters;
+NLS_NCHAR_CHARACTERSET 国家字符集，主要是用于NCHAR、NVARCHAR、NCLOB类型的字段数据
+NLS_CHARACTERSET 数据库字符集，用于CHAR、VARCHAR、CLOB、LONG类型的字段数据
+
+===================================================================================================
+MySQL：desc table;
+oracle：
+SELECT OWNER,TABLE_NAME,COLUMN_NAME,DATA_TYPE || DECODE (DATA_TYPE,'NUMBER',
+DECODE ('(' || NVL (TO_CHAR (DATA_PRECISION), '*') || ',' || NVL (TO_CHAR (DATA_SCALE), '*') || ')', '(*,*)', NULL, '(*,0)', '(38)', '(' || NVL (TO_CHAR (DATA_PRECISION), '*') || ',' || NVL (TO_CHAR (DATA_SCALE), '*') || ')'),
+'FLOAT', '(' || DATA_PRECISION || ')',
+'DATE', NULL,
+'TIMESTAMP(6)', NULL,
+'(' || DATA_LENGTH || ')') AS DATA_TYPE,
+DATA_LENGTH,
+NULLABLE
+FROM DBA_TAB_COLUMNS
+WHERE TABLE_NAME = UPPER ('表名')
+ORDER BY OWNER, TABLE_NAME, COLUMN_ID;
+
+===============================================================================
+创建表：create table 表名(列名1 number(2) primary key,列名2 varchar(10) default '' references 表名(字段名) not null,...);
+删除表：drop table 表名;
+添加列：alter table 表名 add 列名 varchar2(10) [default 默认值];//  同时添加多列————add(列名 类型,列名 类型,...)
+删除列：alter table 表名 drop column 列名;
+修改类型：alter table 表名 modify 列名 varchar2(200);
+修改默认值：alter table 表名 modify 字段名 default 默认值;
+重命名列：alter table 表名 rename column 原列名 to 新列名;
+添加列注释：comment on column 表名.列名 is '注释内容';
+添加表注释：comment on table 表名 is '注释内容';
+commit;
+
+排序：orderno,metatypename  orderno,name（树节点）
+
+===================================================================================================
+删除视图：drop view 视图名
+创建/修改视图：create or replace view 视图名 as select 查询子句
+
+-- 用户视图
+create or replace view vw_msg_user as select id,no,name,type,valid,dept_id,id_card,mobile,email,'1' source from msg_user where del_flag='0'
+union select id,no,to_char(cast(name as varchar2(20))),'4','0',office_id,sfzh,mobile,to_char(cast(email as varchar2(255))),'0' from dsp_user where del_flag='0';
+
+===================================================================================================
+查询本周、本月、本年数据
+<if test="time == 'week'">
+	and a.call_time >= trunc(next_day(sysdate-8, 1)+1) and trunc(next_day(sysdate-8, 1)+8) > a.call_time
+</if>
+<if test="time == 'month'">
+	and a.call_time >= trunc(sysdate, 'mm') and trunc(last_day(sysdate)+1) > a.call_time 
+</if>
+<if test="time == 'year'">
+	and a.call_time >= trunc(sysdate, 'y') and to_date(to_char(sysdate,'yyyy')+1 || '-01-01','yyyy-mm-dd') > a.call_time
+</if>

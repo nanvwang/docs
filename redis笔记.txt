@@ -1,0 +1,29 @@
+# 启动服务器，指定配置文件 cd C:\myProgram\Redis-x64-3.0.504
+redis-server redis.windows.conf
+# 客户端连接服务器
+redis-cli -h <host> -p <port> -a <password> 【可以先连接，再认证 auth <password>】
+redis-cli 默认连接本地服务，使用6379端口【使用--raw后缀，避免中文乱码】
+# 连接后，使用ping命令测试服务是否启动
+exit 退出redis连接
+--------------------------------------------------
+# 性能测试
+redis-benchmark [-h <host> -p <port>] -n 10000 -q
+
+
+--------------------------------------------------
+键：
+	type <key名称> 返回 key 所储存的值的类型
+	exists <key名称> 测试给定 key 是否存在
+	del <key名称> 在 key 存在时删除 key
+	expire <key名称> <seconds> 给 key 设置过期时间，以秒计
+	persist <key名称> 移除 key 的过期时间，key 将永久有效
+	keys <pattern> 查找符合给定模式的 key，runoob* 匹配以 runoob 开头的 key，* 匹配所有 key
+
+字符串：
+	set <key名称> <值> 设置 key 的值
+	get <key名称> 获取 key 的值
+	incr <key名称> 将 key 中的数字值增一
+	decr <key名称> 将 key 中的数字值减一
+	incrby <key名称> <increment> 将 key 中的数字值增加指定增量值
+	decrby <key名称> <increment> 将 key 中的数字值减去指定减量值
+	append <key名称> <值> 若 key 已存在并是一个字符串，将给定的值拼接到 key 原来值的末尾

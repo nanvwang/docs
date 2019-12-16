@@ -1,0 +1,38 @@
+复制Linux上文件到windows上 scp /oracle/a.txt  administrator@192.168.3.181:/d:/
+复制windows上文件到linux上 scp administrator@192.168.3.181:/d:/test/config.ips /oracle
+	因windows本身不支持ssh协议，在windows客户端安装ssh for windows的客户端软件，比如winsshd，使windows系统支持ssh协议
+	
+授权 chmod -R 777 <文件/目录>
+
+执行脚本：
+sh <脚本文件>
+./<脚本>
+
+查询端口 netstat -tunpl |grep 80
+查看进程详情 ps -ef|grep <PID> (也可根据进程查 ps -ef|grep redis)
+	UID、PID、PPID、C、STIME、TTY、TIME、CMD
+	用户标识符、进程ID、父进程ID、占用CPU资源、系统启动时间、登入者终端位置、使用掉的CPU时间、指令
+停止进程 kill -s 9 <PID>
+
+查看防火墙开放端口 firewall-cmd --query-port=8080/tcp
+添加开放端口 firewall-cmd --add-port=8080/tcp --permanent
+重载 firewall-cmd --reload
+移除开放端口 firewall-cmd --permanent --remove-port=8080/tcp
+
+-------------------------------------------------------------------------------
+.tar 解压：tar -xvf <tar文件> 打包：tar -cvf <tar文件> <文件1> <文件2>
+.gz 解压1：gunzip <gz文件> 解压2：gzip -d <gz文件> 压缩：gzip <文件>
+.tar.gz,.tgz 解压：tar -zxvf <tar.gz文件> 压缩：tar -zcvf <tar.gz文件> <文件1> <文件2>
+.zip 解压：unzip <zip文件> 压缩：zip <zip文件> <文件>（压缩目录，-r递归）
+.rar 解压：rar -x <rar文件> 压缩：rar -a <rar文件> <文件>
+.war 解压：unzip -oq <war文件> -d <目标目录>（-o不询问，-q不显示解压信息）
+
+-------------------------------------------------------------------------------
+crontab –u //设定某个用户的cron服务，一般root用户在执行这个命令的时候需要此参数
+crontab –l //列出某个用户cron服务的详细内容
+crontab –r //删除某个用户的cron服务
+crontab –e //编辑某个用户的cron服务
+service crond start
+service crond stop
+service crond restart
+service crond reload

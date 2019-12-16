@@ -1,0 +1,17 @@
+tomcat在eclipse中运行时的临时目录
+	${eclipse工作目录}\.metadata\.plugins\org.eclipse.wst.server.core\tmp0\wtpwebapps
+	比如我的设置为C:\myWorkspace
+	
+=================================================
+项目导入
+Deployment Assembly
+	/src/main/common	WEB-INF/classes
+	/src/main/java      WEB-INF/classes
+	/src/main/resources WEB-INF/classes
+	/src/main/webapp    /
+Java Build Path
+	{project}/src/main/common
+	{project}/src/main/java
+	{project}/src/main/resources
+	
+	{project}/src/main/webapp/WEB-INF/classes

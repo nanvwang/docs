@@ -1,0 +1,24 @@
+// parameterType不是必须的，mybatis的TypeHandler会推断参数类型，除了list/array，其它参数需要包装进对象或map中
+<update id="updateStatus" parameterType="java.util.HashMap">
+    update hcloud_index_items set status=#{status} where del_flag='0' and id in
+    <foreach collection="ids/list/array" item="item" open="(" separator="," close=")">#{item}</foreach>
+</update>
+
+
+<foreach collection="list" item="item" open="(" separator="," close=")">#{item}</foreach>
+
+// 传入多个参数
+User login(@Param("name")String name, @Param("password")String password);
+
+<select id="login" resultType="com.pojo.User">
+    select * from us where name=#{name} and password=#{password}
+</select>
+
+// 但foreach嵌套到if里面时，直接使用#{item}会报错，而且临时变量item与入参有相同作用域，会覆盖入参的值
+<if test="kindIds != null and kindIds.size > 0">
+	and kind_id not in <foreach collection="kindIds" item="item" index="index" open="(" close=")" separator=",">#{kindIds[${index}]}</foreach>
+</if>
+// kindIds为null时报错
+<foreach collection="kindIds" item="item" open="and kind_id not in (" close=")" separator=",">#{item}</foreach>
+
+数组参数ids的长度为ids.length
