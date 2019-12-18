@@ -1,0 +1,53 @@
+import javax.servlet.http.HttpServletRequest;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+
+    /**
+	 * 读取json文件，并根据id查找
+	 */
+	private Map<String, Object> get(HttpServletRequest req, String path, String id) {
+		Map<String, Object> map = new HashMap<String, Object>();
+		InputStream in = req.getServletContext().getResourceAsStream(path);
+		ObjectMapper om = new ObjectMapper();
+		try {
+			JsonNode json = om.readTree(in);
+			in.close();
+			ArrayNode data = (ArrayNode)json.get("data");
+			for (int i = 0; i < data.size(); i++) {
+				if(id.equals(data.get(i).get("id").textValue())) {
+					map = om.convertValue(data.get(i), Map.class);
+					break;
+				}
+			}
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return map;
+	}
+	
+	/**
+	 * 读取json文件，获取data数据
+     * model.addAttribute("services", getData(req, "/static/bigdata/msdemodata/service.json.txt"));
+	 */
+	private List<Map<String, Object>> getData(HttpServletRequest req, String path) {
+		List<Map<String, Object>> list = new ArrayList<Map<String, Object>>(); 
+		InputStream in = req.getServletContext().getResourceAsStream(path);
+		ObjectMapper om = new ObjectMapper();
+		try {
+			JsonNode json = om.readTree(in);
+			in.close();
+			ArrayNode data = (ArrayNode)json.get("data");
+			for (int i = 0; i < data.size(); i++) {
+					list.add(om.convertValue(data.get(i), Map.class));
+			}
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return list;
+	}
