@@ -1,0 +1,47 @@
+CAS（compare and swap）用于在硬件层面上提供原子性操作
+JAVA锁：循环CAS，直至操作成功标识获取锁成功，解锁时也要循环CAS。
+JAVA SE 1.6 引入
+	偏向锁（并发操作竞争时才释放锁）、
+	轻量级锁（自旋取锁，失败就膨胀成重量级锁且不回退）、
+	重量级锁（竞争锁进入现场等待，解锁后唤醒竞争）。
+
+// 不可重入锁
+public class Lock{
+    private boolean isLocked = false;
+    public synchronized void lock() throws InterruptedException{
+        while(isLocked){
+            wait();
+        }
+        isLocked = true;
+    }
+    public synchronized void unlock(){
+        isLocked = false;
+        notify();
+    }
+}
+
+// 可重入锁：线程可以进入任何一个它已经拥有的锁所同步着的代码块，多次重入需要相同次数解锁才能真正解锁
+public class Lock{
+    boolean isLocked = false;
+    Thread  lockedBy = null;
+    int lockedCount = 0;
+    public synchronized void lock()
+            throws InterruptedException{
+        Thread thread = Thread.currentThread();
+        while(isLocked && lockedBy != thread){
+            wait();
+        }
+        isLocked = true;
+        lockedCount++;
+        lockedBy = thread;
+    }
+    public synchronized void unlock(){
+        if(Thread.currentThread() == this.lockedBy){
+            lockedCount--;
+            if(lockedCount == 0){
+                isLocked = false;
+                notify();
+            }
+        }
+    }
+}

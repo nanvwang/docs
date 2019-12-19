@@ -1,0 +1,36 @@
+/**
+ * 1.加载（将二进制class文件加载到方法区）
+ * 2.链接
+		验证（检查加载类的正确性、安全性：文件格式、元数据、字节码、符号引用）
+		准备（为类成员变量分配空间、初始化赋值，final静态字段在编译时分配）
+		解析（将常量池中的符号引用替换为直接引用：引用替换、字段解析、接口解析、方法解析）
+ * 3.初始化（静态块、静态变量赋值）（先初始化父类）
+		主动使用类（new创建实例、使用静态变量/方法、反射Class.forName、初始化子类、标为启动类的类和main所在类）
+			类在初始化时要求其父类已经初始化，但接口初始化时并不要求父接口完成初始化，当真正用到父接口时才会初始化
+ * 4.使用（实例化）
+ * 5.卸载（执行System.exit、程序正常执行结束、异常或错误而终止、操作系统错误导致JVM进程终止）
+ */
+class TestClassLoader {
+
+    public static void main(String[] args){
+        System.out.println(Son.strFather);// Son不会进行初始化，Father会进行初始化，因为其静态变量被使用了
+    }
+}
+
+class YeYe{
+    static {
+        System.out.println("YeYe静态代码块");
+    }
+}
+class Father extends YeYe{
+    public static String strFather="HelloJVM_Father";
+    static{
+        System.out.println("Father静态代码块");
+    }
+}
+class Son extends Father{
+    public static String strSon="HelloJVM_Son";
+    static{
+        System.out.println("Son静态代码块");
+    }
+}
