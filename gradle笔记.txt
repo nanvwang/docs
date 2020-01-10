@@ -1,0 +1,24 @@
+// 帮助
+gradle tasks // 查看可以执行的任务
+gradle projects // 展示所有子项目
+// 安装
+gradle init // 初始化一个Gradle项目
+gradle wrapper // 生成Gradle包装文件
+// 构建
+gradle build // 组装并测试此项目，测试报告位于build/reports/tests/
+gradle clean // 删除build目录
+// 应用程序
+gradle run // 将此项目作为JVM应用程序运行，执行main方法
+// 验证
+gradle check // 运行所有校验
+gradle test // 运行单元测试
+// 文档说明
+gradle javadoc // 为main源代码生成Javadoc接口文档
+
+ctrl-c // 停止运行
+
+---------------------------------------------------------------------------------------------------
+Gretty
+1.在build.gradle中plugins下声明使用插件：id 'org.gretty' version '3.0.1'
+// Gretty任务
+gradle appRun // 在交互模式下启动web应用，ctrl-c 停止
