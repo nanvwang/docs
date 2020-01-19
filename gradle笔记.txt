@@ -1,0 +1,96 @@
+// 帮助
+gradle -h // 查看帮助信息
+gradle -v // 查看版本信息
+gradle tasks // 查看可以执行的任务
+gradle projects // 展示所有子项目
+// 安装
+gradle init // 初始化一个Gradle项目
+gradle wrapper // 生成Gradle包装文件
+// 构建
+gradle assemble // 打包
+gradle build // 组装并测试此项目，测试报告位于build/reports/tests/
+gradle clean // 删除build目录
+// 应用程序
+gradle run // 将此项目作为JVM应用程序运行，执行main方法
+// 验证
+gradle check // 运行所有校验
+gradle test // 运行单元测试
+// 文档说明
+gradle javadoc // 为main源代码生成Javadoc接口文档
+
+ctrl-c // 停止运行
+
+---------------------------------------------------------------------------------------------------
+①构建Java项目
+    gradle init // 按提示选择Java项目
+gradlew jar // 生成jar包
+---------------------------------------------------------------------------------------------------
+②构建Java Web应用
+初始化Java应用，或手动创建目录结构src/main/java、src/test/java
+在build.gradle中定义war插件，定义依赖
+    plugins {
+        id 'war' // 继承java插件，添加打war包任务，禁用java插件打jar包的默认行为
+        id 'org.gretty' version '3.0.1' // 用于运行Java Web应用的插件
+    }
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        compileOnly 'javax.servlet:javax.servlet-api:4.0.1' // 编译时依赖，不参与打包
+        testImplementation 'junit:junit:4.12'
+    }
+创建web资源目录src/main/webapp
+定义Servlet类，使用注解@WebServlet，或定义配置文件src/main/webapp/WEB-INF/web.xml
+定义jsp文件，使Servlet的响应指向jsp
+
+gradlew war // 生成war包
+添加Servlet服务器插件gretty来运行Web应用，通过gradle tasks查看新增加的任务
+gradlew appRun // 在交互模式下运行Web应用
+---------------------------------------------------------------------------------------------------
+③构建Spring Boot 2.x应用
+初始化Java应用，或手动创建目录结构src/main/java、src/test/java
+在build.gradle中定义SpringBoot插件，定义依赖
+    plugins {
+        id 'java'
+        id "org.springframework.boot" version "2.2.2.RELEASE"
+    }
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        implementation 'org.springframework.boot:spring-boot-dependencies:2.2.2.RELEASE'
+        implementation 'org.springframework.boot:spring-boot-starter-web'
+        testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    }
+    bootJar {
+        mainClassName = 'demo.App'
+    }
+将生成的App类移到包下面，如demo包，以方便spring组件扫描，定义SpringBoot应用
+    @SpringBootApplication
+    public class App {
+        public static void main(String[] args) {
+            SpringApplication.run(App.class, args);
+        }
+    }
+定义控制器类
+    @RestController("/")
+    public class HelloGradleController {
+        @GetMapping
+        public String helloGradle() {
+            return "Hello Gradle!";
+        }
+    }
+定义测试类
+    @RunWith(SpringRunner.class)
+    @SpringBootTest(classes = App.class)
+    @AutoConfigureMockMvc
+    public class AppTest {
+        @Autowired
+        private MockMvc mvc;
+        @Test
+        public void helloGradle() throws Exception {
+            mvc.perform(get("/")).andExpect(status().isOk()).andExpect(content().string("Hello Gradle!"));
+        }
+    }
+gradlew bootJar // 生成可执行jar包，通过java -jar build/libs/{我的项目}.jar
+gradlew bootRun // 默认以8080端口运行SpringBoot应用
