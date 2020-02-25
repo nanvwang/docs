@@ -53,7 +53,7 @@ gradlew appRun // 在交互模式下运行Web应用
     plugins {
         id 'java'
         id "org.springframework.boot" version "2.2.2.RELEASE"
-		id "io.spring.dependency-management" version "1.0.8.RELEASE" // spring依赖管理插件，提供与Maven中相似的依赖管理行为，如声明对bom中的依赖时允许缺失版本号
+        id "io.spring.dependency-management" version "1.0.8.RELEASE" // spring依赖管理插件，提供与Maven中相似的依赖管理行为，如声明对bom中的依赖时允许缺失版本号
     }
     repositories {
         jcenter()
