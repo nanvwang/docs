@@ -114,14 +114,14 @@ configurations {
     java插件的配置项：
         implementation定义本地依赖，在项目外面不可见，依赖不传递
         api定义依赖，在项目外面可见
-        compileOnly定义编译时依赖，只在编译时有效，不参与打包
-        runtimeOnly定义运行时依赖，只在打包时有效，不参与编译
+        compileOnly定义编译时依赖 // compile已废弃，被implementation和api取代
+        runtimeOnly定义运行时依赖 // runtime已废弃，被runtimeElements取代，查找运行时元素
         testImplementation定义测试依赖，只在单元测试和打包测试时有效
         testCompileOnly定义测试编译时依赖，只在编译测试类时有效
         testRuntimeOnly定义测试运行时依赖，只在执行测试类时有效
     war插件（继承java插件，添加打war包的任务）的配置项：
-        providedCompile定义编译时依赖
-        providedRuntime定义运行时依赖
+        providedCompile定义编译时依赖，只在编译时有效，不参与打包，运行时由容器提供，如java的servlet-api库
+        providedRuntime定义运行时依赖，只在打包时有效，不参与编译
 
     声明依赖
 dependencies {
