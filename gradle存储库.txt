@@ -1,5 +1,5 @@
 依赖项管理是一种以自动化方式声明、解析和使用项目所需依赖项的技术。
-Gradle内建支持公开库：
+Gradle内建支持公开库：（windows下jar包存放位置C:\Users\(用户名)\.gradle\caches\modules-2\files-2.1）
 1.mavenCentral()
     Maven库，一个流行的存储库，托管开放源代码，供Java项目使用，地址 https://repo.maven.apache.org/maven2/，默认名称 MavenRepo。
   mavenLocal()
