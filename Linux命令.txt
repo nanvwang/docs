@@ -1,6 +1,10 @@
 复制Linux上文件到windows上 scp /oracle/a.txt  administrator@192.168.3.181:/d:/
 复制windows上文件到linux上 scp administrator@192.168.3.181:/d:/test/config.ips /oracle
 	因windows本身不支持ssh协议，在windows客户端安装ssh for windows的客户端软件，比如winsshd，使windows系统支持ssh协议
+通过xshell上传下载文件：
+    1.安装rz/sz，>>yum -y install lszrz
+    2.上传到当前目录，>>rz -y
+    3.下载到所选目录，>>sz <文件名>
 	
 授权 chmod -R 777 <文件/目录>
 
